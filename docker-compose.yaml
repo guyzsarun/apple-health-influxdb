@@ -1,0 +1,16 @@
+services:
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 7788:7788
+    environment:
+      INFLUX_URL:
+      INFLUX_TOKEN:
+      INFLUX_ORG:
+      OTEL_SERVICE_NAME:
+      OTEL_METRICS_EXPORTER:
+      OTEL_TRACES_EXPORTER:
+      OTEL_EXPORTER_OTLP_ENDPOINT:
+
