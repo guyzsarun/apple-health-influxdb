@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     INFLUX_ORG: str = "data"
     INFLUX_TOKEN: str = "changeme"
 
+    AUTH_ENABLED: bool = True
+    AUTH_API_KEY: str = "test_api_key"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding='utf-8')
 

@@ -1,12 +1,14 @@
 import influxdb_client
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from influxdb_client.client.write_api import SYNCHRONOUS
-from fastapi import FastAPI, HTTPException, Request
+
+from fastapi import FastAPI, HTTPException, Request, Depends, Security
+from fastapi.security import APIKeyHeader
+
 from opentelemetry import trace
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
 from config import settings
 from utils import *
-
 
 DATAPOINTS_CHUNK = settings.DATAPOINTS_CHUNK
 
@@ -21,6 +23,8 @@ client = influxdb_client.InfluxDBClient(
     token=settings.INFLUX_TOKEN,
     org=settings.INFLUX_ORG
 )
+
+api_key_header = APIKeyHeader(name="X-API-Key",auto_error=False)
 
 
 def write_to_influx(data: list, bucket: str = "metrics"):
@@ -60,8 +64,11 @@ def ingest_metrics(metrics: list):
         write_to_influx(transformed_data)
 
 @app.post("/")
-def collect(healthkit_data: dict, request: Request):
+def collect(healthkit_data: dict, api_key: str = Security(api_key_header)):
     logger.info("Request received")
+    if settings.AUTH_ENABLED and api_key != settings.AUTH_API_KEY:
+        logger.info("Unauthorized access attempt with API key: {}".format(api_key))
+        raise HTTPException(status_code=401, detail="Unauthorized")
     try:
         ingest_metrics(healthkit_data.get("data", {}).get("metrics", []))
     except Exception as e:
