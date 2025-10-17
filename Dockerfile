@@ -15,7 +15,7 @@ RUN pip install -r requirements.txt
 RUN opentelemetry-bootstrap -a install
 
 # Copy application files
-COPY app.py .
+COPY ./app .
 
 # Expose the Flask port
 EXPOSE 7788
