@@ -1,5 +1,8 @@
 influxdb-client==1.49.0
 uvicorn==0.35.0
 fastapi==0.116.1
+pydantic-settings==2.11.0
+
+# tracing dependencies
 opentelemetry-distro
 opentelemetry-exporter-otlp
